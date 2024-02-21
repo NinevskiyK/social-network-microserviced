@@ -1,9 +1,0 @@
-@startuml
-title Контекст социальной сети
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-
-Person(user, "User", "Social network's user")
-System(socialNetwork, "Social network")
-
-Rel(user, socialNetwork, "Registers, creates and looks for a posts and comments, likes posts")
-@enduml
