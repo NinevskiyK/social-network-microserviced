@@ -1,0 +1,52 @@
+@startuml
+
+title Диаграмма сущностей социальной сети
+
+skinparam linetype ortho
+
+entity User {
+    *user_id : number <<generated>>
+    --
+    *user_login : varchar(256) 
+    *user_password_hash : string hashed (SHA3-512)
+}
+
+entity Post {
+    *post_id : number <<generated>>
+    --
+    *user_id : number <<FK>>
+    --
+    *post_title : varchar(512)
+    *post_text : string
+}
+
+entity Comment {
+    *comment_id : number <<generated>>
+    --
+    *user_id : number <<FK>>
+    --
+    *parent_type : literal(<<post>>|<<comment>>)
+    *parent_id : number <<FK>>
+    --
+    *comment_text : string
+}
+
+entity Like {
+    *user_id : number <<FK>>
+    *post_id : number <<FK>>
+}
+
+entity View {
+    *user_id : number <<FK>>
+    *post_id : number <<FK>>
+}
+
+User ||--o{ Post : Makes
+User ||--o{ Comment : Makes
+User ||--o{ Like : Hits
+User ||--o{ View : Makes
+
+Comment }o--|| Post : Owns
+View }o--|| Post : Owns
+Like }o--|| Post : Owns
+@enduml
