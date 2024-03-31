@@ -26,7 +26,7 @@ System_Boundary(commentsPostsBoundary, "Comments and posts microservice") {
     entity Post {
         *post_id : UUID4 <<generated>>
         --
-        *user_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
         --
         *post_title : varchar(512)
         *post_text : string
@@ -35,10 +35,10 @@ System_Boundary(commentsPostsBoundary, "Comments and posts microservice") {
     entity Comment {
         *comment_id : UUID4 <<generated>>
         --
-        *user_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
         --
         *parent_type : literal(<<post>>|<<comment>>)
-        *parent_id : number <<FK>>
+        *parent_id : UUID4 <<FK>>
         --
         *comment_text : string
     }
@@ -46,13 +46,13 @@ System_Boundary(commentsPostsBoundary, "Comments and posts microservice") {
 
 System_Boundary(statisticsBoundary, "Statistics microservice") {
     entity Like {
-        *user_id : number <<FK>>
-        *post_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
+        *post_id : UUID4 <<FK>>
     }
 
     entity View {
-        *user_id : number <<FK>>
-        *post_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
+        *post_id : UUID4 <<FK>>
     }
 }
 

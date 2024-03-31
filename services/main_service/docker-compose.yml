@@ -23,7 +23,6 @@ services:
       - postgres
 
   main_service:
-    container_name: back
     build: .
     restart: unless-stopped
     environment:
@@ -33,12 +32,15 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
       hmacSecret: ${hmacSecret}
+      POST_SERVICE_HOST: ${POST_SERVICE_HOST}
+      POST_SERVICE_PORT: ${POST_SERVICE_PORT}
     ports:
       - 8080:8081
     depends_on:
       - postgres
     networks:
       - postgres
+      - grpc
 
 volumes:
   postgresdata:
@@ -46,4 +48,6 @@ volumes:
 
 networks:
   postgres:
+    driver: bridge
+  grpc:
     driver: bridge

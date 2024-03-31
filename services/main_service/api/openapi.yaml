@@ -32,10 +32,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                type: string
           description: successful operation
           headers:
             Set-Cookie:
@@ -64,6 +60,144 @@ paths:
       summary: Updates user info
       security:
         - cookieAuth: []
+  /post/create:
+    post:
+      operationId: postCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        description: Post
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+                    description: id of created post
+        "401":
+          description: unauthorized
+      summary: Creates new post
+      security:
+        - cookieAuth: []
+  /post/update/{postId}:
+    put:
+      operationId: postUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        description: New post content
+        required: true
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to update
+      responses:
+        "200":
+          description: successful operation
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Updates post's content
+      security:
+        - cookieAuth: []
+  /post/delete/{postId}:
+    delete:
+      operationId: postDelete
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to delete
+      responses:
+        "200":
+          description: successful operation
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Deletes post
+      security:
+        - cookieAuth: []
+  /post/get/{postId}:
+    get:
+      operationId: postGet
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to get
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Gets a post
+      security:
+        - cookieAuth: []
+  /wall:
+    get:
+      operationId: postGet
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 100
+          description: offset of posts
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 50
+          description: limit of number of posts to return
+          required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+      summary: Gets posts with pagination, sorted by post id
+      security:
+        - cookieAuth: []
 components:
   schemas:
     Credentionals:
@@ -84,13 +218,6 @@ components:
       type: object
       xml:
         name: credentionals
-    UserId:
-      properties:
-        id:
-          example: c984a2c3-0246-4a3d-a1d8-857ce02a31b8
-          format: uuid4
-          type: string
-      type: object
     User:
       example:
         user_birthday: 2000-01-23
@@ -124,6 +251,20 @@ components:
       type: object
       xml:
         name: user
+    Post:
+      example:
+        post_title: Post title
+        post_text: This is my post
+      properties:
+        post_title:
+          example: Post title
+          minLength: 1
+          maxLength: 512
+          type: string
+        post_text:
+          example: This is my post 
+          minLength: 1
+          type: string
   securitySchemes:
       cookieAuth:
         type: apiKey
