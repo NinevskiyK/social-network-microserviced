@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse/
+      - clickhouse_logs:/var/log/clickhouse-server/
+      - ./scripts/init_db:/docker-entrypoint-initdb.d
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    networks:
+    - clickhouse_db
+
+  dbeaver:
+    image: dbeaver/cloudbeaver
+    ports:
+      - 127.0.0.1:8978:8978
+    volumes:
+      - dbeaver:/var/cloudbeaver/workspace
+    networks:
+      - clickhouse_db
+
+  kafka:
+    image: confluentinc/cp-kafka
+    environment:
+      KAFKA_BROKER_ID: 1000
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: '1'
+    networks:
+    - clickhouse_db
+    - kafka
+
+  init-kafka:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:9092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic likes --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic views --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:9092 --list
+      "
+    networks:
+      - kafka
+
+  zookeeper:
+    image: zookeeper
+    networks:
+    - kafka
+
+volumes:
+  clickhouse_data:
+  clickhouse_logs:
+  dbeaver:
+
+networks:
+  clickhouse_db:
+    driver: bridge
+  kafka:
+    driver: bridge

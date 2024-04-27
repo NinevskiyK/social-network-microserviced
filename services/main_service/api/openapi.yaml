@@ -205,6 +205,56 @@ paths:
       summary: Gets posts with pagination, sorted by post id
       security:
         - cookieAuth: []
+  /post/like/{postId}:
+    post:
+      operationId: postLike
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of post to like
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+      summary: Likes a post
+      security:
+        - cookieAuth: []
+  /post/view/{postId}:
+    post:
+      operationId: postView
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of post to view
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+      summary: Views a post
+      security:
+        - cookieAuth: []
 components:
   schemas:
     Credentionals:

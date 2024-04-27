@@ -41,6 +41,7 @@ services:
     networks:
       - postgres
       - grpc
+      - social-network-microserviced_kafka
 
 volumes:
   postgresdata:
@@ -51,3 +52,6 @@ networks:
     driver: bridge
   grpc:
     driver: bridge
+  social-network-microserviced_kafka:
+    external: true
+

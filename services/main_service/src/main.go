@@ -34,5 +34,8 @@ func main() {
 	authed.DELETE("/post/delete/:post_id", controllers.DeletePost)
 	authed.GET("/post/get/:post_id", controllers.GetPost)
 	authed.GET("/wall/:user_id", controllers.GetWall)
+
+	authed.POST("/post/like/:post_id", controllers.LikePost)
+	authed.POST("/post/view/:post_id", controllers.ViewPost)
 	r.Run(":8081")
 }

@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"main_service/models"
 	"main_service/post_service"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	kafka "github.com/segmentio/kafka-go"
 )
 
 // POST /post/create
@@ -169,4 +172,52 @@ func GetWall(c *gin.Context) {
 		posts = append(posts, models.Post{PostTitle: in.PostTitle, PostText: in.PostText})
 	}
 	c.JSON(200, posts)
+}
+
+func sendStats(user_id string, post_id string, topic string) error {
+	conn, err := kafka.DialLeader(context.Background(), "tcp", "kafka:9092", topic, 0)
+	if err != nil {
+		return err
+	}
+
+	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+	_, err = conn.WriteMessages(
+		kafka.Message{Value: []byte(fmt.Sprintf("{\"user_id\":\"%s\",\"post_id\":\"%s\"}", user_id, post_id))},
+	)
+	if err != nil {
+		return err
+	}
+
+	err = conn.Close()
+	return err
+}
+
+// POST /post/view/{postId}
+// add a view to a post
+func ViewPost(c *gin.Context) {
+	user_id := c.GetString("id")
+	var post_id models.PostId
+	if err := c.ShouldBindUri(&post_id); err != nil {
+		c.JSON(400, gin.H{"error": "wrong post id"})
+		return
+	}
+	err := sendStats(user_id, post_id.PostId, "views")
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+	}
+}
+
+// POST /post/like/{postId}
+// add a like to a post
+func LikePost(c *gin.Context) {
+	user_id := c.GetString("id")
+	var post_id models.PostId
+	if err := c.ShouldBindUri(&post_id); err != nil {
+		c.JSON(400, gin.H{"error": "wrong post id"})
+		return
+	}
+	err := sendStats(user_id, post_id.PostId, "likes")
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+	}
 }
