@@ -131,10 +131,15 @@ func GetPost(c *gin.Context) {
 	}
 }
 
-// GET /wall?offset=100&limit=50
+// GET /wall/{userId}?offset=100&limit=50
 // gets posts with pagination
 func GetWall(c *gin.Context) {
 	user_id := c.GetString("id")
+	var target_id models.UserId
+	if err := c.ShouldBindUri(&target_id); err != nil {
+		c.JSON(400, gin.H{"error": "wrong user id"})
+		return
+	}
 	var pagination models.Pagination
 	c.ShouldBind(&pagination)
 
@@ -146,21 +151,22 @@ func GetWall(c *gin.Context) {
 	var paginated_request post_service.PaginatedPostRequest
 	paginated_request.Pagination = &post_service_pagination
 	paginated_request.RequesterId = user_id
+	paginated_request.TargetId = target_id.PostId
 	stream, err := post_service.Client.GetPaginatedPosts(ctx, &paginated_request)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "internal server error"})
 		return
 	}
-	var posts []post_service.Post
+	var posts []models.Post
 	for {
-		post, err := stream.Recv()
+		in, err := stream.Recv()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			c.JSON(500, gin.H{"error": "internal server error"})
 		}
-		posts = append(posts, *post)
+		posts = append(posts, models.Post{PostTitle: in.PostTitle, PostText: in.PostText})
 	}
 	c.JSON(200, posts)
 }

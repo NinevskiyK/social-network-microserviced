@@ -13,3 +13,7 @@ type Pagination struct {
 type PostId struct {
 	PostId string `uri:"post_id" binding:"required"`
 }
+
+type UserId struct {
+	PostId string `uri:"user_id" binding:"required"`
+}

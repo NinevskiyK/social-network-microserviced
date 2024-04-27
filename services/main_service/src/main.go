@@ -33,6 +33,6 @@ func main() {
 	authed.PUT("/post/update/:post_id", controllers.UpdatePost)
 	authed.DELETE("/post/delete/:post_id", controllers.DeletePost)
 	authed.GET("/post/get/:post_id", controllers.GetPost)
-	authed.GET("/wall", controllers.GetWall)
+	authed.GET("/wall/:user_id", controllers.GetWall)
 	r.Run(":8081")
 }

@@ -166,10 +166,17 @@ paths:
       summary: Gets a post
       security:
         - cookieAuth: []
-  /wall:
+  /wall/{userId}:
     get:
       operationId: postGet
       parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the user to get their wall
         - in: query
           name: offset
           schema:
@@ -262,7 +269,7 @@ components:
           maxLength: 512
           type: string
         post_text:
-          example: This is my post 
+          example: This is my post
           minLength: 1
           type: string
   securitySchemes:
