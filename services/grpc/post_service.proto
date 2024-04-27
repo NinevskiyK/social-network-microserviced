@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option go_package = "./post_service";
+
+message Post {
+    string post_id = 1; // for new posts this value is ignored
+    string user_id = 2;
+    string post_title = 3;
+    string post_text = 4;
+}
+
+enum ErrorEnum {
+    OK = 0;
+    NO_SUCH_POST = 1;
+    ACCESS_DENIED = 2;
+}
+
+message Error {
+    ErrorEnum error = 1;
+}
+
+message PostResponse {
+    ErrorEnum error = 1;
+    Post post = 2;
+}
+
+message Pagination {
+    uint64 offset = 1;
+    uint64 limit = 2;
+}
+
+message PostRequest {
+    string post_id = 1;
+    string requester_id = 2;
+}
+
+message PaginatedPostRequest {
+    string requester_id = 1;
+    Pagination pagination = 2;
+}
+
+message PostId {
+    string id = 1;
+}
+
+service PostService {
+    rpc CreatePost (Post) returns (PostId) {}
+    rpc GetPost (PostRequest) returns (PostResponse) {}
+    rpc GetPaginatedPosts (PaginatedPostRequest) returns (stream Post) {}
+    rpc UpdatePost (Post) returns (Error) {}
+    rpc DeletePost (PostRequest) returns (Error) {}
+}

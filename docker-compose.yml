@@ -1,0 +1,3 @@
+include:
+  - services/main_service/docker-compose.yml
+  - services/post_service/docker-compose.yml

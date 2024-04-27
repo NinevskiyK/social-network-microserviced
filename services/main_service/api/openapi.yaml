@@ -1,0 +1,272 @@
+openapi: 3.0.3
+info:
+  description: SocialNetwork API
+  title: Swagger SocialNetwork - OpenAPI 3.0
+  version: 1.0.0
+paths:
+  /user/register:
+    post:
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentionals'
+        description: Credentionals
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+        "400":
+          description: Login is already in use
+      summary: Register a new user
+  /user/login:
+    post:
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentionals'
+        description: Credentionals
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=abacaba; Path=/; Max-Age=3600; Secure; Domain=localhost
+              style: simple
+        "400":
+          description: Invalid username/password supplied
+      summary: Logs user into the system
+  /user/update_me:
+    put:
+      operationId: updateMe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: User
+        required: true
+      responses:
+        "200":
+          description: successful operation
+        "401":
+          description: unauthorized
+      summary: Updates user info
+      security:
+        - cookieAuth: []
+  /post/create:
+    post:
+      operationId: postCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        description: Post
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+                    description: id of created post
+        "401":
+          description: unauthorized
+      summary: Creates new post
+      security:
+        - cookieAuth: []
+  /post/update/{postId}:
+    put:
+      operationId: postUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        description: New post content
+        required: true
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to update
+      responses:
+        "200":
+          description: successful operation
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Updates post's content
+      security:
+        - cookieAuth: []
+  /post/delete/{postId}:
+    delete:
+      operationId: postDelete
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to delete
+      responses:
+        "200":
+          description: successful operation
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Deletes post
+      security:
+        - cookieAuth: []
+  /post/get/{postId}:
+    get:
+      operationId: postGet
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+            example: 25b4025c-8427-47c8-8cbc-3e7ea37f3458
+          required: true
+          description: id of the post to get
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+        "403":
+          description: user has not access to post
+        "404":
+          description: post not found
+      summary: Gets a post
+      security:
+        - cookieAuth: []
+  /wall:
+    get:
+      operationId: postGet
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 100
+          description: offset of posts
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 50
+          description: limit of number of posts to return
+          required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        "401":
+          description: unauthorized
+      summary: Gets posts with pagination, sorted by post id
+      security:
+        - cookieAuth: []
+components:
+  schemas:
+    Credentionals:
+      example:
+        user_password: 2df2ac2db274c92c486948a76c162ccd912d015105b14c1fc26ca8b25c37fc98
+        user_name: Elon_Mask
+      properties:
+        user_name:
+          example: Elon_Mask
+          maxLength: 256
+          minLength: 1
+          pattern: "^[a-zA-Z_]$"
+          type: string
+        user_password:
+          description: hashedPassword (SHA3-512)
+          example: 2df2ac2db274c92c486948a76c162ccd912d015105b14c1fc26ca8b25c37fc98
+          type: string
+      type: object
+      xml:
+        name: credentionals
+    User:
+      example:
+        user_birthday: 2000-01-23
+        user_email: john@email.com
+        last_name: James
+        user_phone: "+78005553535"
+        first_name: John
+      properties:
+        first_name:
+          example: John
+          maxLength: 256
+          minLength: 1
+          type: string
+        last_name:
+          example: James
+          maxLength: 256
+          minLength: 1
+          type: string
+        user_birthday:
+          format: date
+          type: string
+        user_email:
+          example: john@email.com
+          format: email
+          type: string
+        user_phone:
+          example: "+78005553535"
+          maxLength: 64
+          minLength: 1
+          type: string
+      type: object
+      xml:
+        name: user
+    Post:
+      example:
+        post_title: Post title
+        post_text: This is my post
+      properties:
+        post_title:
+          example: Post title
+          minLength: 1
+          maxLength: 512
+          type: string
+        post_text:
+          example: This is my post 
+          minLength: 1
+          type: string
+  securitySchemes:
+      cookieAuth:
+        type: apiKey
+        in: cookie
+        name: token

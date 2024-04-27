@@ -7,7 +7,7 @@ title Архитектура социальной сети
 !define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
 
 !include DEVICONS/go.puml
-!include DEVICONS/rust.puml
+!include DEVICONS/python.puml
 !include DEVICONS2/cplusplus.puml
 
 !include DEVICONS/postgresql.puml
@@ -20,7 +20,7 @@ Person(user, "User", "Social network's user")
 Container(frontend, "Frontend", "Deleted info")
 Container(mainService, "Main service", "golang", "Provides api, handles registration and authentification", "go")
 Container(statisticsService, "Statistics service", "c++", "Handles likes and views", "cplusplus")
-Container(commentsPostsService, "Posts and comments service", "rust", "Manages posts and comments", "rust")
+Container(commentsPostsService, "Posts and comments service", "python", "Manages posts and comments", "python")
 Container(broker, "broker", "Kafka", "", "kafka")
 
 ContainerDb(commentsPostsDB, "Comments and posts DB", "MongoDB", "Stores posts and comments", "mongodb")

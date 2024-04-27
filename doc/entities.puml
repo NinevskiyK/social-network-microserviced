@@ -7,30 +7,38 @@ skinparam linetype polyline
 
 System_Boundary(mainBoundary, "Main microservice") {
     entity User {
-        *user_id : number <<generated>>
+        *user_id : UUID4 <<generated>>
         --
-        *user_login : varchar(256) 
+        *user_name : varchar(256) ([a-zA-Z_])
         *user_password_hash : string hashed (SHA3-512)
+        --
+        updatable part
+        --
+        *first_name: varchar(256)
+        *last_name: varchar(256)
+        *user_birthday: date(YYYY-MM-DD)
+        *user_email: varchar(256) /' see https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address '/
+        *user_phone: varchar(64)
     }
 }
 
 System_Boundary(commentsPostsBoundary, "Comments and posts microservice") {
     entity Post {
-        *post_id : number <<generated>>
+        *post_id : UUID4 <<generated>>
         --
-        *user_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
         --
         *post_title : varchar(512)
         *post_text : string
     }
 
     entity Comment {
-        *comment_id : number <<generated>>
+        *comment_id : UUID4 <<generated>>
         --
-        *user_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
         --
         *parent_type : literal(<<post>>|<<comment>>)
-        *parent_id : number <<FK>>
+        *parent_id : UUID4 <<FK>>
         --
         *comment_text : string
     }
@@ -38,13 +46,13 @@ System_Boundary(commentsPostsBoundary, "Comments and posts microservice") {
 
 System_Boundary(statisticsBoundary, "Statistics microservice") {
     entity Like {
-        *user_id : number <<FK>>
-        *post_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
+        *post_id : UUID4 <<FK>>
     }
 
     entity View {
-        *user_id : number <<FK>>
-        *post_id : number <<FK>>
+        *user_id : UUID4 <<FK>>
+        *post_id : UUID4 <<FK>>
     }
 }
 
