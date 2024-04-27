@@ -18,7 +18,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 5050:8080
+      - 127.0.0.1:5050:8080
     networks:
       - postgres
 
@@ -35,7 +35,7 @@ services:
       POST_SERVICE_HOST: ${POST_SERVICE_HOST}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
     ports:
-      - 8080:8081
+      - 127.0.0.1:8080:8081
     depends_on:
       - postgres
     networks:
