@@ -64,6 +64,13 @@ services:
     networks:
     - kafka
 
+  stats_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:8188:8188
+
 volumes:
   clickhouse_data:
   clickhouse_logs:
