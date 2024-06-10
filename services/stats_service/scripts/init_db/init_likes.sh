@@ -3,14 +3,14 @@ set -e
 
 clickhouse client -n <<-EOSQL
     CREATE TABLE likes (
-        post_id String,
-        user_id String
+        post_id UUID,
+        user_id UUID
     ) Engine = MergeTree
     ORDER BY post_id;
 
     CREATE TABLE likes_queue (
-        post_id String,
-        user_id String
+        post_id UUID,
+        user_id UUID
     )
     ENGINE = Kafka
     SETTINGS kafka_broker_list = 'kafka:9092',
