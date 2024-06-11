@@ -14,6 +14,10 @@ type PostId struct {
 	PostId string `uri:"post_id" binding:"required"`
 }
 
+type Type struct {
+	Type string `form:"type"`
+}
+
 type UserId struct {
 	PostId string `uri:"user_id" binding:"required"`
 }

@@ -59,6 +59,16 @@ func GetId(login string) (string, error) {
 	return id, nil
 }
 
+func GetLogin(id string) (string, error) {
+	var login string
+
+	err := DB.QueryRow("SELECT login FROM users_creds WHERE id = $1", id).Scan(&login)
+	if err != nil {
+		return "", err
+	}
+	return login, nil
+}
+
 func UpdateInfo(id string, user_info models.UserInfo) error {
 	res, err := DB.Exec("UPDATE users_info SET (first_name, last_name, user_birthday, user_email, user_phone) = ($2, $3, $4, $5, $6) WHERE id = $1", id,
 		user_info.FirstName, user_info.LastName, user_info.UserBirthday, user_info.UserEmail, user_info.UserPhone)

@@ -1,0 +1,5 @@
+flask
+clickhouse_connect
+grpcio
+grpcio-tools
+python-dotenv

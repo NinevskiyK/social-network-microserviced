@@ -3,14 +3,16 @@ set -e
 
 clickhouse client -n <<-EOSQL
     CREATE TABLE views (
-        post_id String,
-        user_id String
+        post_id UUID,
+        user_id UUID,
+        author_id UUID
     ) Engine = MergeTree
     ORDER BY post_id;
 
     CREATE TABLE views_queue (
-        post_id String,
-        user_id String
+        post_id UUID,
+        user_id UUID,
+        author_id UUID
     )
     ENGINE = Kafka
     SETTINGS kafka_broker_list = 'kafka',
@@ -20,6 +22,6 @@ clickhouse client -n <<-EOSQL
         kafka_max_block_size = 1048576;
 
     CREATE MATERIALIZED VIEW views_queue_mv TO views AS
-    SELECT post_id, user_id
+    SELECT post_id, user_id, author_id
     FROM views_queue;
 EOSQL

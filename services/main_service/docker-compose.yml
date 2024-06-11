@@ -34,6 +34,8 @@ services:
       hmacSecret: ${hmacSecret}
       POST_SERVICE_HOST: ${POST_SERVICE_HOST}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+      STATS_SERVICE_HOST: ${STATS_SERVICE_HOST}
+      STATS_SERVICE_PORT: ${STATS_SERVICE_PORT}
     ports:
       - 127.0.0.1:8080:8081
     depends_on:
