@@ -57,12 +57,14 @@ class PostRequest(_message.Message):
     def __init__(self, post_id: _Optional[str] = ..., requester_id: _Optional[str] = ...) -> None: ...
 
 class PaginatedPostRequest(_message.Message):
-    __slots__ = ("requester_id", "pagination")
+    __slots__ = ("requester_id", "target_id", "pagination")
     REQUESTER_ID_FIELD_NUMBER: _ClassVar[int]
+    TARGET_ID_FIELD_NUMBER: _ClassVar[int]
     PAGINATION_FIELD_NUMBER: _ClassVar[int]
     requester_id: str
+    target_id: str
     pagination: Pagination
-    def __init__(self, requester_id: _Optional[str] = ..., pagination: _Optional[_Union[Pagination, _Mapping]] = ...) -> None: ...
+    def __init__(self, requester_id: _Optional[str] = ..., target_id: _Optional[str] = ..., pagination: _Optional[_Union[Pagination, _Mapping]] = ...) -> None: ...
 
 class PostId(_message.Message):
     __slots__ = ("id",)
