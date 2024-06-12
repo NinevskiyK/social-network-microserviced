@@ -11,7 +11,7 @@ jobs:
         with:
           go-version: 1.21
       - name: test
-        run: cd services/main_service/src && go test -v ./..
+        run: cd services/main_service/src && go test -v ./...
 
   python_tests:
     runs-on: ubuntu-latest
