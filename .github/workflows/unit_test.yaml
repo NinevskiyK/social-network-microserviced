@@ -1,0 +1,29 @@
+name: unit_tests
+run-name: ${{ github.actor }} unit tests
+on: [push]
+jobs:
+  go_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.21
+      - name: test
+        run: cd services/main_service/src && go test
+
+  python_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.10
+      - name: Set up libraries
+        run: python3 -m pip install -r requirements.txt
+      - name: stats_service
+        run: cd services/stats_service/src && python3 tests.py && cd ../../..
+      - name: post_service
+        run: cd services/post_service/src && python3 tests.py && cd ../../..

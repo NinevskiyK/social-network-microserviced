@@ -12,6 +12,7 @@ async def serve() -> None:
         PostService(), server
     )
     server.add_insecure_port("[::]:50051")
+    logging.info("started!")
     await server.start()
     await server.wait_for_termination()
 
