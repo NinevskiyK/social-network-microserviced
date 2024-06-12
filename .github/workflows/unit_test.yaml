@@ -11,16 +11,16 @@ jobs:
         with:
           go-version: 1.21
       - name: test
-        run: cd services/main_service/src && go test
+        run: cd services/main_service/src && go test -v ./..
 
   python_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
+      - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: 3.10
+          python-version: 3.9
       - name: Set up libraries
         run: python3 -m pip install -r requirements.txt
       - name: stats_service
