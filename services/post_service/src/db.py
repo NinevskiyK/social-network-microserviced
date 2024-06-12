@@ -9,15 +9,20 @@ from grpc_stub.post_service_pb2 import Post, Error, ErrorEnum, Pagination
 
 
 coll = None
-def get_database():
-    user = os.getenv("MONGO_USER")
-    password = os.getenv("MONGO_PASSWORD")
-    host = os.getenv("MONGO_HOST")
-    port = os.getenv("MONGO_PORT")
-    database = os.getenv("MONGO_DATABASE")
-    collection = os.getenv("MONGO_COLLECTION")
+def get_database(connection_string=None, collection=None, database=None):
+    if connection_string is None:
+        user = os.getenv("MONGO_USER")
+        password = os.getenv("MONGO_PASSWORD")
+        host = os.getenv("MONGO_HOST")
+        port = os.getenv("MONGO_PORT")
 
-    connection_string = f"mongodb://{user}:{password}@{host}:{port}"
+        connection_string = f"mongodb://{user}:{password}@{host}:{port}"
+
+    if collection is None:
+        collection = os.getenv("MONGO_COLLECTION")
+    if database is None:
+        database = os.getenv("MONGO_DATABASE")
+
     client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
     global coll
     coll = client.get_database(database).get_collection(collection)

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "./stats_service";
+
+message TopUser {
+    string userIds = 1;
+    uint64 likesCount = 2;
+}
+
+message TopUsers {
+    repeated TopUser users = 1;
+}
+
+message Id {
+    string id = 1;
+}
+
+message TopPost {
+    string postId = 1;
+    string authorId = 2;
+    uint64 count = 3;
+}
+
+message Posts {
+    repeated TopPost posts = 1;
+}
+
+message Type {
+    bool isViews = 1;
+}
+
+message Count {
+    uint64 likesCount = 1;
+    uint64 viewsCount = 2;
+}
+
+message StatsRequest {
+    Type type = 1;
+    string id = 2;
+}
+
+service StatsService {
+    rpc GetStats (Id) returns (Count) {}
+    rpc GetTopPosts (Type) returns (Posts) {}
+    rpc GetTopUsers (google.protobuf.Empty) returns (TopUsers) {}
+}

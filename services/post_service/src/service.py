@@ -22,12 +22,10 @@ class PostService(PostServiceServicer):
         post = await db.get_post(request.post_id)
         if post is None:
             return PostResponse(error=ErrorEnum.NO_SUCH_POST)
-        if post.user_id != request.requester_id:
-            return PostResponse(error=ErrorEnum.ACCESS_DENIED)
         return PostResponse(error=ErrorEnum.OK, post=post)
 
     async def GetPaginatedPosts(self, request: PaginatedPostRequest, context) -> AsyncIterator[Post]:
-        async for post in db.get_paginated(request.requester_id, request.pagination):
+        async for post in db.get_paginated(request.target_id, request.pagination):
             yield post
 
     async def UpdatePost(self, new_post: Post, context) -> Error:
