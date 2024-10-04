@@ -1,3 +1,4 @@
 include:
+  - services/stats_service/docker-compose.yml
   - services/main_service/docker-compose.yml
   - services/post_service/docker-compose.yml

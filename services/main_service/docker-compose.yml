@@ -18,7 +18,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 5050:8080
+      - 127.0.0.1:5050:8080
     networks:
       - postgres
 
@@ -34,13 +34,16 @@ services:
       hmacSecret: ${hmacSecret}
       POST_SERVICE_HOST: ${POST_SERVICE_HOST}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+      STATS_SERVICE_HOST: ${STATS_SERVICE_HOST}
+      STATS_SERVICE_PORT: ${STATS_SERVICE_PORT}
     ports:
-      - 8080:8081
+      - 127.0.0.1:8080:8081
     depends_on:
       - postgres
     networks:
       - postgres
       - grpc
+      - social-network-microserviced_kafka
 
 volumes:
   postgresdata:
@@ -51,3 +54,6 @@ networks:
     driver: bridge
   grpc:
     driver: bridge
+  social-network-microserviced_kafka:
+    external: true
+
