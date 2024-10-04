@@ -20,12 +20,15 @@ def healthcheck():
     return "<p>Alive!</p>"
 
 class StatsServiceServicer(stats_service_pb2_grpc.StatsServiceServicer):
-    def __init__(self):
+    def __init__(self, host='clickhouse', port=8123, username=None, password=None):
         time.sleep(5)
-        username = os.environ['CLICKHOUSE_USER']
-        password = os.environ['CLICKHOUSE_PASSWORD']
-        database = os.environ['CLICKHOUSE_DB']
-        self.client = clickhouse_connect.get_client(host='clickhouse', username=username, password=password, connect_timeout=500)
+
+        if username is None:
+            username = os.environ['CLICKHOUSE_USER']
+        if password is None:
+            password = os.environ['CLICKHOUSE_PASSWORD']
+
+        self.client = clickhouse_connect.get_client(host=host, port=port, username=username, password=password, connect_timeout=500)
 
     def GetStats(self, request: Id, context) -> Count:
         likes = self.client.query(f'SELECT countDistinct(user_id) AS count FROM likes WHERE post_id=\'{request.id}\'')
@@ -41,17 +44,17 @@ class StatsServiceServicer(stats_service_pb2_grpc.StatsServiceServicer):
         result = self.client.query('SELECT author_id, sum(user_count) AS count FROM ( SELECT b.author_id, a.user_count FROM ( SELECT post_id, countDistinct(user_id) as user_count FROM likes GROUP BY post_id ) AS a INNER JOIN ( SELECT post_id, author_id FROM likes GROUP BY post_id, author_id ) AS b ON a.post_id = b.post_id ) GROUP BY author_id ORDER BY count DESC LIMIT 3;')
         return TopUsers(users=[TopUser(userIds=str(id), likesCount=int(count)) for id, count in result.result_rows])
 
-def serve_grpc():
+def serve_grpc(service):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     stats_service_pb2_grpc.add_StatsServiceServicer_to_server(
-        StatsServiceServicer(), server
+        service, server
     )
     server.add_insecure_port("[::]:44455")
     server.start()
     server.wait_for_termination()
 
 if __name__ == "__main__":
-    thread = Thread(target=serve_grpc)
+    thread = Thread(target=serve_grpc, args=(StatsServiceServicer(), ))
     thread.start()
     app.run("0.0.0.0", "44445")
     thread.join()

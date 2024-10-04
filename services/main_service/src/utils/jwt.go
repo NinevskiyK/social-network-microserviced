@@ -9,6 +9,8 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
+var Now = time.Now
+
 func GetIdFromJWT(tokenString string) (id string, err error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -31,7 +33,7 @@ func GetIdFromJWT(tokenString string) (id string, err error) {
 		if err != nil {
 			return "", err
 		}
-		if token_time.Compare(time.Now()) == -1 {
+		if token_time.Compare(Now()) == -1 {
 			return "", errors.New("expired token")
 		}
 		id, is_string := claims["id"].(string)
@@ -46,7 +48,7 @@ func GetIdFromJWT(tokenString string) (id string, err error) {
 func CreateJWT(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":       id,
-		"exp_time": time.Now().Add(60 * time.Minute).Format(time.RFC3339),
+		"exp_time": Now().Add(60 * time.Minute).Format(time.RFC3339),
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("hmacSecret")))
